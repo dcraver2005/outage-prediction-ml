@@ -8,7 +8,9 @@ This is a data science project analyzing U.S. power outage data to understand wh
 
 ## Introduction
 
-Power outages affect millions of Americans each year, causing economic disruption, public safety concerns, and reduced quality of life. While some outages are resolved within minutes, others can stretch on for days—or even weeks. Understanding what causes these prolonged outages is crucial for utilities planning infrastructure improvements and emergency response teams preparing for disasters.
+Power outages affect millions of Americans each year, causing economic disruption, public safety concerns, and reduced quality of life. While some outages are resolved within minutes, others can stretch on for days—or even weeks. Understanding what causes these prolonged outages is crucial for utilities planning infrastructure improvements and emergency response teams preparing for disasters. 
+
+According to the Department of Energy, a “major outage” is one that affects at least 50,000 customers or results in an unexpected loss of 300 megawatts or more. The dataset used in this project comes from Purdue University’s Laboratory for Advancing Sustainable Critical Infrastructure.
 
 **Research Question:** Which causes lead to the longest outages, and can we predict whether an outage will be long?
 
@@ -57,19 +59,29 @@ Here's a sample of the cleaned data (first 5 rows, selected columns):
 
 ### Univariate Analysis
 
-The distribution of outage durations is heavily right-skewed, with most outages lasting under 5,000 minutes but a long tail of extreme events stretching to over 100,000 minutes.
+The number of reported outages varied significantly over time, with a dramatic spike in 2011 reaching over 250 outages. After this peak, outage counts gradually declined through 2016. The increase around 2011 may reflect improved reporting requirements or an actual increase in grid disruptions during that period.
 
 <iframe
-  src="assets/duration_distribution.html"
+  src="assets/outages_per_year.html"
   width="100%"
   height="500"
   frameborder="0"
 ></iframe>
 
-Severe weather dominates as the most common cause of outages, accounting for nearly half of all events. Intentional attacks (vandalism, sabotage) and system operability disruptions round out the top three.
+The distribution of outage durations is shown on a log scale because the raw data is extremely skewed—most outages last a few hours, but some last weeks. Taking the log compresses these extreme values, making it easier to see patterns in the data. On this scale, a value of 8 corresponds to about 3,000 minutes (~2 days), while a value of 10 represents roughly 22,000 minutes (~15 days).
+The histogram shows a bimodal pattern: a small cluster of very short outages near zero, and a larger group peaking around 2 days. The tail extending to the right captures rare but severe outages that lasted much longer.
 
 <iframe
-  src="assets/cause_frequency.html"
+  src="assets/log_duration.html"
+  width="100%"
+  height="500"
+  frameborder="0"
+></iframe>
+
+To compare the outage count per region, the **Northeast** region experiences the most outages by far, with over 350 events, followed by the South and West regions. The West North Central region has the fewest outages. This could reflect differences in population density, weather patterns, or grid infrastructure across regions.
+
+<iframe
+  src="assets/outage_per_region.html"
   width="100%"
   height="500"
   frameborder="0"
@@ -77,10 +89,37 @@ Severe weather dominates as the most common cause of outages, accounting for nea
 
 ### Bivariate Analysis
 
-While severe weather is the most *frequent* cause, **fuel supply emergencies** produce the longest outages on average—lasting nearly 9.4 days compared to just 2.8 days for severe weather. This dramatic difference suggests that fuel supply issues, though rare, create uniquely challenging restoration scenarios.
+System operability disruptions and severe weather affect the most customers on average—both impacting around 200,000 customers per outage. Equipment failures also have a significant reach at nearly 100,000 customers. Interestingly, fuel supply emergencies—which we saw cause the longest outages—affect relatively few customers on average. This suggests that fuel issues create prolonged but localized problems, while severe weather causes widespread but faster-to-resolve outages.
 
 <iframe
-  src="assets/cause_vs_duration.html"
+  src="assets/avg_customers_affected_cause_category.html"
+  width="100%"
+  height="500"
+  frameborder="0"
+></iframe>
+
+This scatter plot shows how often each cause occurs (x-axis) versus how long those outages last on average (y-axis). Severe weather (light blue) is by far the most common cause with nearly 800 outages, but fuel supply emergencies (orange) cause the longest outages—averaging over 13,000 minutes (~9 days)—despite being relatively rare.
+
+<iframe
+  src="assets/cause_frequency_vs_avg_duration.html"
+  width="100%"
+  height="500"
+  frameborder="0"
+></iframe>
+
+To further explore these findings, here are some visuals:
+
+<iframe
+  src="assets/avg_duration_by_cause.html"
+  width="100%"
+  height="500"
+  frameborder="0"
+></iframe>
+
+Outage Count by Cause:
+
+<iframe
+  src="assets/outages_count_by_cause_cat.html"
   width="100%"
   height="500"
   frameborder="0"
@@ -90,16 +129,14 @@ While severe weather is the most *frequent* cause, **fuel supply emergencies** p
 
 The relationship between cause category and climate region reveals important patterns. Fuel supply emergencies in the East North Central region show extraordinarily high average durations (nearly 34,000 minutes), while the same cause type in the Northwest averages just 1 minute—suggesting regional infrastructure differences play a major role.
 
-| Climate Region | Equipment Failure | Fuel Supply Emergency | Intentional Attack | Severe Weather |
-|----------------|------------------:|----------------------:|-------------------:|---------------:|
-| Central        | 322               | 10,035                | 346                | 3,250          |
-| East North Central | 26,435        | 33,971                | 2,376              | 4,435          |
-| Northeast      | 216               | 14,630                | 196                | 4,430          |
-| Northwest      | 702               | 1                     | 374                | 4,838          |
-| South          | 296               | 17,483                | 326                | 4,391          |
-| Southeast      | 555               | NaN                   | 505                | 2,663          |
-| Southwest      | 114               | 76                    | 266                | 11,573         |
-| West           | 525               | 6,155                 | 858                | 2,928          |
+I have provided a pivot table into an interactive heatmap to show these findingds visually:
+
+<iframe
+  src="assets/pivot_table_heatmap.html"
+  width="100%"
+  height="500"
+  frameborder="0"
+></iframe>
 
 ---
 
@@ -127,14 +164,23 @@ I tested whether the missingness of `OUTAGE.DURATION` depends on other columns.
 - **Alternative Hypothesis:** The distribution differs between missing and non-missing duration groups.
 - **Test Statistic:** Total Variation Distance (TVD)
 
+I used a bar chart to compare the distributions because CAUSE.CATEGORY is a categorical variable. Bar charts make it easy to see if certain causes have higher or lower rates of missing duration values compared to others.
+
 <iframe
-  src="assets/missingness_cause.html"
+  src="assets/cause_category_by_missingness_outage_duration.html"
   width="100%"
   height="500"
   frameborder="0"
 ></iframe>
 
-**Result:** Observed TVD = 0.252, p-value = 0.002. I **reject the null hypothesis**—the missingness of duration depends on the cause category. Notably, fuel supply emergencies have a higher rate of missing duration values.
+<iframe
+  src="assets/empirical_dist_TVD_cause_cat.html"
+  width="100%"
+  height="500"
+  frameborder="0"
+></iframe>
+
+**Result:** Observed TVD = 0.252, p-value = 0.001. I **reject the null hypothesis**—the missingness of duration depends on the cause category. Notably, fuel supply emergencies have a higher rate of missing duration values.
 
 **Test 2: Duration Missingness vs. Total Customers**
 
@@ -142,14 +188,23 @@ I tested whether the missingness of `OUTAGE.DURATION` depends on other columns.
 - **Alternative Hypothesis:** The distributions differ.
 - **Test Statistic:** Kolmogorov-Smirnov (K-S) statistic
 
+I used a KDE (Kernel Density Estimate) plot because TOTAL.CUSTOMERS is a numerical variable. KDE plots show the shape of a distribution as a smooth curve, making it easy to compare whether the two groups (missing vs. not missing) have similar or different distributions.
+
 <iframe
-  src="assets/missingness_customers.html"
+  src="assets/kde_population_missingness_outage_duration.html"
   width="100%"
   height="500"
   frameborder="0"
 ></iframe>
 
-**Result:** Observed K-S = 0.1305, p-value = 0.252. I **fail to reject the null hypothesis**—there's no significant evidence that duration missingness depends on the total customer count.
+<iframe
+  src="assets/empirical_dist_K-S_total_customers.html"
+  width="100%"
+  height="500"
+  frameborder="0"
+></iframe>
+
+**Result:** Observed K-S = 0.1305, p-value = 0.2780. I **fail to reject the null hypothesis**—there's no significant evidence that duration missingness depends on the total customer count. 
 
 ---
 
@@ -165,7 +220,7 @@ Given the dramatic average duration differences observed in EDA, I formally test
 - **Significance Level:** α = 0.05
 
 <iframe
-  src="assets/hypothesis_test.html"
+  src="assets/dist_mean_diff_outage_duration.html"
   width="100%"
   height="500"
   frameborder="0"
@@ -223,7 +278,7 @@ The baseline model uses a **Logistic Regression** classifier with two features:
 | F1-Score (long=1) | 0.486 |
 | AUC-ROC | 0.729 |
 
-**Assessment:** The baseline model performs moderately well, with AUC of 0.729 indicating decent discriminative ability. However, precision is low (many false positives), suggesting room for improvement through feature engineering and model selection.
+**Assessment:** The baseline model performs okay, with AUC-ROC of 0.729 indicating decent discriminative ability. However, precision is low (many false positives), suggesting room for improvement through feature engineering and model selection.
 
 ---
 
@@ -266,7 +321,7 @@ Used GridSearchCV with 5-fold cross-validation, optimizing for AUC-ROC:
 
 ### Custom Threshold
 
-For power outage prediction, **false negatives are more costly than false positives**. Missing a long outage means emergency teams aren't prepared, potentially costing lives and extending the crisis. I lowered the classification threshold from 0.5 to 0.4 to prioritize recall.
+For power outage prediction, **false negatives are more costly than false positives**. Missing a long outage means emergency teams aren't prepared, potentially costing lives and extending the crisis. I lowered the classification threshold from 0.5 to 0.4 to prioritize recall. 
 
 ### Final Model Performance
 
@@ -278,10 +333,32 @@ For power outage prediction, **false negatives are more costly than false positi
 | F1-Score (long=1) | 0.486 | 0.556 | +14.4% |
 | AUC-ROC | 0.729 | **0.816** | +11.9% |
 
+I noticed slight overfitting with a gap at 0.0684 with the data but with limited data of ~1500 outages, I decided to proceed. 
+
+| === Overfitting Check === |
+|---------------------------|
+| Train Accuracy: 0.7822 |
+| Test Accuracy:  0.6469 | 
+| Train AUC:      0.8844 | 
+| Test AUC:       0.8160 | 
+| CV AUC:         0.8506 | 
+| Gap (Train-Test AUC): 0.0684 |
+
+### Feature Importance
+
+I was curious to see which predictors were most important to the Random Forest model, so I computed the feature importances
+(using mean decrease in Gini impurity) and aggregated one-hot encoded columns back to their original features.
+
+![Feature Importances by Column](assets/feature_importance.png)
+
 **Key Improvements:**
 - **Recall jumped from 62.7% to 89.3%**—the model now catches almost 90% of truly long outages
 - AUC improved significantly (0.729 → 0.816), indicating better overall discrimination
-- The tradeoff is slightly more false alarms, but this is acceptable for emergency preparedness
+- The tradeoff is slightly more false alarms, but this is acceptable for emergency preparedness. It is best to be overly cautious.
+
+![Confusion Matrix](assets/confusion_matrix_final.png)
+
+![ROC Curve](assets/roc_curve_final.png)
 
 ---
 
@@ -335,7 +412,3 @@ However, the fairness analysis identified that performance varies by region, wit
 1. Fuel supply emergencies, though rare, require the most emergency planning resources
 2. Machine learning can identify likely long outages with high recall (89%)
 3. Geographic disparities in model performance warrant attention for equitable emergency response
-
----
-
-*This project was completed for DSC 80 at UC San Diego.*
