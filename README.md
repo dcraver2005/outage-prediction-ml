@@ -8,13 +8,17 @@ This is a data science project analyzing U.S. power outage data to understand wh
 
 ## Introduction
 
-Power outages affect millions of Americans each year, causing economic disruption, public safety concerns, and reduced quality of life. While some outages are resolved within minutes, others can stretch on for days—or even weeks. Understanding what causes these prolonged outages is crucial for utilities planning infrastructure improvements and emergency response teams preparing for disasters. 
+This project analyzes major U.S. power outages to understand the factors that lead to prolonged service disruptions and to build a model that predicts whether an outage is likely to be long (defined as being in the top 25% of outage durations).
 
-According to the Department of Energy, a “major outage” is one that affects at least 50,000 customers or results in an unexpected loss of 300 megawatts or more. The dataset used in this project comes from Purdue University’s Laboratory for Advancing Sustainable Critical Infrastructure.
+The dataset comes from the Department of Energy and was compiled by Purdue University’s Laboratory for Advancing Sustainable Critical Infrastructure (LASCI). The Department of Energy classifies a major outage as an event affecting at least 50,000 customers or causing an unplanned loss of 300 megawatts or more. The dataset contains 1,534 outages recorded across the continental United States between 2000 and 2016.
+
+Understanding why certain outages last significantly longer than others matters for both public safety and infrastructure resilience. Long outages disrupt emergency response, slow economic activity, and pose heightened risks to vulnerable communities. Identifying patterns behind these prolonged outages can help utilities anticipate risk and allocate resources more effectively.
+
+In this project, I focus on the following central question:
 
 **Research Question:** Which causes lead to the longest outages, and can we predict whether an outage will be long?
 
-This analysis uses data from the U.S. Department of Energy's major power outage records, covering **1,534 outage events** from 2000 to 2016 across the continental United States.
+To explore this question, I examine several relevant columns from the dataset, including:
 
 ### Relevant Columns
 
@@ -30,6 +34,8 @@ This analysis uses data from the U.S. Department of Energy's major power outage 
 | `CUSTOMERS.AFFECTED` | Number of customers impacted |
 | `MONTH` | Month when outage occurred |
 | `TOTAL.CUSTOMERS` | Total customers in the affected utility service area |
+
+These columns provide a mix of environmental, economic, temporal, and infrastructural information—together offering a meaningful basis for understanding why some outages are short while others escalate into long-duration failures.
 
 ---
 
@@ -335,8 +341,8 @@ For power outage prediction, **false negatives are more costly than false positi
 
 I noticed slight overfitting with a gap at 0.0684 with the data but with limited data of ~1500 outages, I decided to proceed. 
 
-| === Overfitting Check === |
-|---------------------------|
+| Overfitting Check |
+|------------------- |
 | Train Accuracy: 0.7822 |
 | Test Accuracy:  0.6469 | 
 | Train AUC:      0.8844 | 
